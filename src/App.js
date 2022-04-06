@@ -1,12 +1,23 @@
+import { useState } from 'react';
 import './App';
 import CardList from './components/Card/CardList';
-import FilterContainer from './components/Filter/FilterContainer';
+import LanguageFilter from './components/Filter/LanguageFilter';
+import Header from './components/Header';
 
 const App = () => {
+  const [currentLanguage, setCurrentLanguage] = useState('javascript');
+
+  const changeLanguageHandler = (language) => {
+    setCurrentLanguage(language);
+  };
+
   return (
     <>
-      <FilterContainer></FilterContainer>
-      <CardList></CardList>
+      <Header />
+      <div>
+        <LanguageFilter onChangeLanguage={changeLanguageHandler} language={currentLanguage} />
+        <CardList language={currentLanguage}></CardList>
+      </div>
     </>
   );
 };
