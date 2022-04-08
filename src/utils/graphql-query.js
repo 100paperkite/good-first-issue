@@ -54,7 +54,7 @@ export const getAllIssuesByRepository = (name, owner, count = 15, { before, afte
  * @param {{string, string}} pageCursor - cursor to fetch next page
  * @returns
  */
-export const searchIssueByLanguageQuery = (
+export const searchIssueByLanguage = (
   language,
   sortOrder = 'updated',
   count = 15,
@@ -67,7 +67,9 @@ export const searchIssueByLanguageQuery = (
         ${before ? `before: "${before}"` : ''}
         ${after ? `after: "${after}"` : ''}
         type: ISSUE
-        query: "label:good-first-issue language:${language} state:open sort:${sortOrder}"
+        query: "label:\\"good first issue\\",good-first-issue 
+        ${language ? `language:${language}` : ''} 
+        state:open sort:${sortOrder}-desc"
       ) {
         pageInfo {
             endCursor

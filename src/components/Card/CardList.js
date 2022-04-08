@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import RepositoryCard from './RepositoryCard';
-import { searchIssueByLanguageQuery } from '../../utils/graphql-query';
+import { searchIssueByLanguage } from '../../utils/graphql-query';
 import { fetchGraphQL } from '../../utils/graphql';
 import { store } from '../../utils/localStroage';
 
@@ -22,11 +22,11 @@ const CardList = (props) => {
         {
           Authorization: `bearer ${GITHUB_ACCESS_TOKEN}`,
         },
-        searchIssueByLanguageQuery(currentLanguage, 'created', 10)
+        searchIssueByLanguage(currentLanguage, 'created', 10)
       )
         .then(({ data: { search } }) => {
           console.log(search);
-          const repositories = uniqueRepositories(search.map((issue) => issue.repository));
+          const repositories = uniqueRepositories(search.map((issue) => issue?.repository));
 
           setRepositories(repositories);
 
@@ -38,9 +38,9 @@ const CardList = (props) => {
   }, [currentLanguage]);
 
   const uniqueRepositories = (repositories) => {
-    return repositories.filter(
-      (repo, index, self) => self.findIndex((t) => t.id === repo.id) === index
-    );
+    return repositories.filter((repo, index, self) => {
+      return self.findIndex((t) => t.id === repo.id) === index;
+    });
   };
 
   return (
