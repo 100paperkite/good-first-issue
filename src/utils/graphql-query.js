@@ -82,6 +82,7 @@ export const searchIssueByLanguage = (
             ... on Issue {
               number
               title
+              titleHTML
               url
               id
               publishedAt
@@ -96,6 +97,9 @@ export const searchIssueByLanguage = (
               assignees(last: 1) {
                 totalCount
               }
+              comments(first:100){
+                totalCount
+              }
               repository {
                 id
                 url
@@ -103,7 +107,7 @@ export const searchIssueByLanguage = (
                 owner {
                   login
                 }
-                description
+                descriptionHTML
                 stargazerCount
                 forkCount
                 languages(first: 5, orderBy: {field: SIZE, direction: DESC}) {
