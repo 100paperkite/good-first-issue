@@ -9,5 +9,4 @@ You need to sigin in GitHub because this app uses [GitHub API](https://docs.gith
 
 ## Front Page
 
-<img width="1675" alt="image" src="https://user-images.githubusercontent.com/98398243/162972831-586fdcc9-5e7e-4eb4-a320-dbfcfe84660b.png">
-
+<img width="1492" alt="image" src="https://user-images.githubusercontent.com/98398243/162973503-50fbc42d-0d15-429d-84aa-31048f50b537.png">
