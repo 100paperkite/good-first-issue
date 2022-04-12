@@ -1,6 +1,6 @@
 # good-first-issue
 
-A wep app to find good-firt-issue using React
+A web app to find good-first-issue using React
 
 ## Sign In
 
