@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/good-first-issue/static/css/main.65118fbd.css",
+    "main.js": "/good-first-issue/static/js/main.74139720.js",
+    "index.html": "/good-first-issue/index.html",
+    "main.65118fbd.css.map": "/good-first-issue/static/css/main.65118fbd.css.map",
+    "main.74139720.js.map": "/good-first-issue/static/js/main.74139720.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.65118fbd.css",
+    "static/js/main.74139720.js"
+  ]
+}
