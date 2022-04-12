@@ -11,23 +11,22 @@ const languages = [
   'c#',
   'go',
   'swift',
-  'objective-c',
+  'kotlin',
+  'lua',
   'typescript',
-  'assembly',
-  'html',
-  'css',
-  'scss',
   'c',
   'rust',
 ];
 
 const LanguageFilter = (props) => {
   return (
-    <div className="flex flex-wrap gap-2 py-4 px-3">
+    <div className="flex flex-wrap gap-2 py-4 px-3 justify-center">
       {languages.map((language) => (
         <Chip
           key={language}
-          className={props.language === language ? `bg-gray-300` : ''}
+          className={`font-semibold border ${
+            props.language === language ? `bg-gray-200` : 'bg-white'
+          }`}
           onClick={() => props.onChangeLanguage(language)}
         >
           {language}

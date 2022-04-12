@@ -1,8 +1,8 @@
 const Header = () => {
   return (
-    <header className="w-full flex items-center justify-center py-6 border-b">
-      <nav>
-        <b className="text-3xl mr-1">Good first issue</b> <i className="text-xl">for a week</i>
+    <header className="w-full flex items-center justify-center py-6 bg-gradient-to-b from-white to-gray-50">
+      <nav className="text-3xl">
+        <b className=" mr-1">Good first issue</b> <i>finder</i>
       </nav>
     </header>
   );

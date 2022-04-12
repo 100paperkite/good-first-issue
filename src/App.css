@@ -2,7 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-#root {
-  max-width: 800px;
-  margin: 0 auto;
+* {
+  box-sizing: border-box;
+}
+
+body {
+  @apply bg-gray-50;
+}
+code {
+  @apply text-sm py-0.5 px-1 bg-gray-200 rounded-md;
 }
