@@ -1,49 +1,55 @@
-/**
- *
- * @param {number} count - number of issues to fetch
- * @param {string} name - name of the repository
- * @param {string} owner - owner of the repository
- * @param {{string, string}} pageCursor - cursor to fetch next page
- * @returns
- */
-export const getAllIssuesByRepository = (name, owner, count = 15, { before, after }) => {
+const GOOD_FIRST_ISSUE_LABEL = '\\"good first issue\\",good-first-issue';
+
+export const searchIssueByRepo = ({
+  repo: { name, owner },
+  sortOrder = 'created',
+  count = 5,
+  pageInfo: { before, after } = {},
+}) => {
   return `
-        repository(name: "${name}", owner: "${owner}") {
-          label(name: "good-first-issue") {
-            issues(
-              first: ${count}
-              after: null
-              filterBy: {assignee: null, states: OPEN}
-              orderBy: {field: UPDATED_AT, direction: DESC}
-              ${before ? `before: "${before}"` : ''}
-              ${after ? `after: "${after}"` : ''}
-            ) {
-              totalCount
-              pageInfo {
-                startCursor
-                hasNextPage
-                endCursor
-              }
-              edges {
-                node {
-                  number
-                  title
-                  resourcePath
-                  url
-                  state
-                  labels(first: 5) {
-                    edges {
-                      node {
-                        name
-                      }
-                    }
-                  }
+    query {
+      search(
+        first: ${count}
+        ${before ? `before: "${before}"` : ''}
+        ${after ? `after: "${after}"` : ''}
+        type: ISSUE
+        query: "label:${GOOD_FIRST_ISSUE_LABEL} repo:${owner}/${name} sort:${sortOrder}-desc state:open"
+      ) {
+        pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
+        }
+        edges {
+          node {
+            ... on Issue {
+              number
+              title
+              titleHTML
+              url
+              id
+              publishedAt
+              updatedAt
+              state
+              labels(first: 5) {
+                nodes {
+                  color
+                  name
                 }
+              }
+              assignees(last: 1) {
+                totalCount
+              }
+              comments(first:100){
+                totalCount
               }
             }
           }
         }
-      `;
+      }
+    }
+  `;
 };
 
 /**
@@ -54,12 +60,12 @@ export const getAllIssuesByRepository = (name, owner, count = 15, { before, afte
  * @param {{string, string}} pageCursor - cursor to fetch next page
  * @returns
  */
-export const searchIssueByLanguage = (
+export const searchIssueByLanguage = ({
   language,
-  sortOrder = 'updated',
+  sortOrder = 'created',
   count = 15,
-  { before, after } = {}
-) => {
+  pageInfo: { before, after } = {},
+}) => {
   return `
   query {
     search(
@@ -67,9 +73,11 @@ export const searchIssueByLanguage = (
         ${before ? `before: "${before}"` : ''}
         ${after ? `after: "${after}"` : ''}
         type: ISSUE
-        query: "label:\\"good first issue\\",good-first-issue 
-        ${language ? `language:${language}` : ''} 
-        state:open sort:${sortOrder}-desc"
+        query: "
+          label:${GOOD_FIRST_ISSUE_LABEL}
+          ${language ? `language:${language}` : ''} 
+          state:open sort:${sortOrder}-desc
+          "
       ) {
         pageInfo {
             endCursor

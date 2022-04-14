@@ -1,8 +1,14 @@
+import { useState } from 'react';
 import { VscRepoForked } from 'react-icons/vsc';
 import { FiStar } from 'react-icons/fi';
 
 import Chip from '../UI/Chip';
 import Issue from './IssueCard';
+import IssueContainer from './IssueContainer';
+
+import { store } from '../../utils/localStorage';
+import { fetchGraphQL } from '../../utils/graphql';
+import { searchIssueByRepo } from '../../utils/graphql-query';
 
 const RepositoryCard = ({
   url,
@@ -11,15 +17,33 @@ const RepositoryCard = ({
   stargazerCount,
   descriptionHTML,
   languages,
-  owner: { login },
+  owner: { login: owner },
   recentIssue,
 }) => {
+  const [issues, setIssues] = useState([recentIssue]);
+
+  const token = store.getLocalStorage('gh-token');
+
+  const loadRepoIssueHandler = async () => {
+    let {
+      data: { search: issues },
+    } = await fetchGraphQL(
+      'https://api.github.com/graphql',
+      {
+        Authorization: `bearer ${token}`,
+      },
+      searchIssueByRepo({ repo: { name, owner }, count: 5 })
+    );
+
+    setIssues(issues);
+  };
+
   return (
     <article className="p-4 shadow-gray-200 shadow-xl rounded-2xl border border-gray-100 gap-3 bg-white">
       <div className="px-2 mb-2 flex shrink-0 items-start">
         <span className="flex-auto text-base sm:text-xl font-bold">
           <a href={url} className="hover:opacity-70 duration-75">
-            {login}/{name}
+            {owner}/{name}
           </a>
         </span>
         <div className="flex shrink-0 justify-end">
@@ -49,7 +73,11 @@ const RepositoryCard = ({
             </Chip>
           ))}
       </div>
-      {recentIssue && <Issue key={recentIssue.id} {...recentIssue}></Issue>}
+      {recentIssue && (
+        <IssueContainer repo={{ owner, name }} onloadBtnClick={loadRepoIssueHandler}>
+          {issues && issues.map((issue) => <Issue key={issue.id} {...issue} />)}
+        </IssueContainer>
+      )}
     </article>
   );
 };

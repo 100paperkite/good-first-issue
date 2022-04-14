@@ -6,8 +6,7 @@ import { fetchGraphQL } from '../../utils/graphql';
 import { store } from '../../utils/localStorage';
 import Spinner from '../UI/Spinner';
 
-const RepositoryCardList = (props) => {
-  const { language: currentLanguage } = props;
+const RepositoryCardList = ({ language }) => {
   const [issues, setIssues] = useState([]);
   const [isLoading, setLoading] = useState(false);
 
@@ -26,10 +25,12 @@ const RepositoryCardList = (props) => {
       } = await fetchGraphQL(
         'https://api.github.com/graphql',
         {
-          // signal: controller.signal,
           Authorization: `bearer ${token}`,
         },
-        searchIssueByLanguage(currentLanguage, 'created', process.env.REACT_APP_ISSUES_PER_PAGE)
+        searchIssueByLanguage({
+          language,
+          count: process.env.REACT_APP_ISSUES_PER_PAGE,
+        })
       );
 
       issues = issues.filter((issue) => Object.keys(issue).length);
@@ -47,7 +48,7 @@ const RepositoryCardList = (props) => {
     return () => {
       isCanceled = true;
     };
-  }, [currentLanguage, token]);
+  }, [language, token]);
 
   const uniqueRepositories = (repositories) => {
     return repositories.filter((repo, index, self) => {
@@ -56,7 +57,6 @@ const RepositoryCardList = (props) => {
   };
 
   const repositories = uniqueRepositories(issues.map((issue) => issue.repository));
-
   return (
     <div className="flex flex-col p-3 gap-2">
       {isLoading ? (
@@ -70,7 +70,7 @@ const RepositoryCardList = (props) => {
           .map((repository) => (
             <RepositoryCard
               {...repository}
-              language={currentLanguage}
+              language={language}
               key={repository.id}
               recentIssue={issues.filter((issue) => issue.repository.id === repository.id)[0]}
             />
