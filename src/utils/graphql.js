@@ -6,17 +6,17 @@
  * @returns Promise
  */
 export const fetchGraphQL = async (url, headers, query) => {
-  return fetch(url, {
+  let res = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       ...headers,
     },
     body: JSON.stringify({ query: query }),
-  })
-    .then((res) => res.json())
-    .then((data) => cleanGraphQLResponse(data))
-    .catch((err) => console.log(err));
+  });
+
+  res = await res.json();
+  return cleanGraphQLResponse(res);
 };
 
 /**
