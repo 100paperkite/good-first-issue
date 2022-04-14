@@ -72,7 +72,7 @@ const RepositoryCardList = (props) => {
               {...repository}
               language={currentLanguage}
               key={repository.id}
-              issues={issues.filter((issue) => issue.repository.id === repository.id)}
+              recentIssue={issues.filter((issue) => issue.repository.id === repository.id)[0]}
             />
           ))
       )}
