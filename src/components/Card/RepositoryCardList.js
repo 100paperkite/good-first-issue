@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import RepositoryCard from './RepositoryCard';
 import { searchIssueByLanguage } from '../../utils/graphql-query';
 import { fetchGraphQL } from '../../utils/graphql';
-import { store } from '../../utils/localStroage';
+import { store } from '../../utils/localStorage';
 
 const RepositoryCardList = (props) => {
   const { language: currentLanguage } = props;

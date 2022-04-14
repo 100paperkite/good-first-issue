@@ -5,7 +5,7 @@ import LanguageFilter from './components/Filter/LanguageFilter';
 import Header from './components/Header';
 import OAuthModal from './components/OAuthModal';
 
-import { store } from './utils/localStroage';
+import { store } from './utils/localStorage';
 
 const App = () => {
   const [currentLanguage, setCurrentLanguage] = useState('');
