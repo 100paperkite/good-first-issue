@@ -4,32 +4,49 @@ import RepositoryCard from './RepositoryCard';
 import { searchIssueByLanguage } from '../../utils/graphql-query';
 import { fetchGraphQL } from '../../utils/graphql';
 import { store } from '../../utils/localStorage';
+import Spinner from '../UI/Spinner';
 
 const RepositoryCardList = (props) => {
   const { language: currentLanguage } = props;
   const [issues, setIssues] = useState([]);
+  const [isLoading, setLoading] = useState(false);
 
   const token = store.getLocalStorage('gh-token');
 
   useEffect(() => {
     if (!token) return;
 
-    // get from github api
-    fetchGraphQL(
-      'https://api.github.com/graphql',
-      {
-        Authorization: `bearer ${token}`,
-      },
-      searchIssueByLanguage(currentLanguage, 'created', process.env.REACT_APP_ISSUES_PER_PAGE)
-    )
-      .then(({ data: { search: issues } }) => {
-        issues = issues.filter((issue) => Object.keys(issue).length);
-        issues = issues.filter(
-          (issue) => issue.repository.stargazerCount >= process.env.REACT_APP_ISSUES_MIN_STARS
-        );
+    let isCanceled = false;
+    setLoading(true);
+
+    // fetch issues
+    (async () => {
+      let {
+        data: { search: issues },
+      } = await fetchGraphQL(
+        'https://api.github.com/graphql',
+        {
+          // signal: controller.signal,
+          Authorization: `bearer ${token}`,
+        },
+        searchIssueByLanguage(currentLanguage, 'created', process.env.REACT_APP_ISSUES_PER_PAGE)
+      );
+
+      issues = issues.filter((issue) => Object.keys(issue).length);
+      issues = issues.filter(
+        (issue) => issue.repository.stargazerCount >= process.env.REACT_APP_ISSUES_MIN_STARS
+      );
+
+      if (!isCanceled) {
+        setLoading(false);
         setIssues(issues);
-      })
-      .catch((e) => console.log(e));
+      }
+    })();
+
+    // cancel if component unmount
+    return () => {
+      isCanceled = true;
+    };
   }, [currentLanguage, token]);
 
   const uniqueRepositories = (repositories) => {
@@ -42,7 +59,12 @@ const RepositoryCardList = (props) => {
 
   return (
     <div className="flex flex-col p-3 gap-2">
-      {repositories &&
+      {isLoading ? (
+        <div className="flex justify-center items-center py-6">
+          <Spinner />
+        </div>
+      ) : (
+        repositories &&
         repositories
           .sort((repository) => -repository.number)
           .map((repository) => (
@@ -52,7 +74,8 @@ const RepositoryCardList = (props) => {
               key={repository.id}
               issues={issues.filter((issue) => issue.repository.id === repository.id)}
             />
-          ))}
+          ))
+      )}
     </div>
   );
 };
