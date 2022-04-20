@@ -62,7 +62,7 @@ const RepositoryList = ({ language }) => {
 
       nextCursor = _nextCursor;
     };
-
+    getIssues();
     return () => {
       observer.disconnect();
       isCanceled = true;
