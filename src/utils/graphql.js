@@ -15,8 +15,7 @@ export const fetchGraphQL = async (url, headers, query) => {
     body: JSON.stringify({ query: query }),
   });
 
-  res = await res.json();
-  return cleanGraphQLResponse(res);
+  return res.json();
 };
 
 /**
@@ -44,6 +43,8 @@ export const cleanGraphQLResponse = (input) => {
       output[key] = input[key].edges.map((edge) => cleanGraphQLResponse(edge.node));
     } else if (input[key] && input[key].nodes) {
       output[key] = input[key].nodes.map((node) => cleanGraphQLResponse(node));
+    } else if (input[key] && input[key].node) {
+      output[key] = cleanGraphQLResponse(input[key].node);
     } else if (isObject(input[key])) {
       output[key] = cleanGraphQLResponse(input[key]);
     } else if (key !== '__typename') {

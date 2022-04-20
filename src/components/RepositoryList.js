@@ -1,35 +1,42 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
-import RepositoryCard from './Repository';
+import Repository from './Repository';
 import { searchIssueByLanguage } from '../utils/graphql-query';
 import { fetchGraphQL, cleanGraphQLResponse } from '../utils/graphql';
 import { store } from '../utils/localStorage';
 import Spinner from '../ui/Spinner';
 
-const RepositoryCardList = ({ language }) => {
+const RepositoryList = ({ language }) => {
+  const lastRef = useRef(null);
   const [issues, setIssues] = useState([]);
   const [isLoading, setLoading] = useState(false);
-
   const token = store.getLocalStorage('gh-token');
 
+  // TODO: Refactor this
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      return;
+    }
+
+    setIssues([]);
 
     let isCanceled = false;
-    setLoading(true);
+    let prevCursor = null;
 
-    // fetch issues
-    (async () => {
+    const fetchIssues = async () => {
+      setLoading(true);
       let {
         data: {
-          search: { edges: issues },
+          search: {
+            edges: issues,
+            pageInfo: { endCursor, hasNextPage },
+          },
         },
       } = await fetchGraphQL(
         'https://api.github.com/graphql',
-        {
-          Authorization: `bearer ${token}`,
-        },
+        { Authorization: `bearer ${token}` },
         searchIssueByLanguage({
+          pageInfo: { after: prevCursor },
           language,
           count: process.env.REACT_APP_ISSUES_PER_PAGE,
         })
@@ -42,12 +49,32 @@ const RepositoryCardList = ({ language }) => {
 
       if (!isCanceled) {
         setLoading(false);
-        setIssues(issues);
+        setIssues((prevIssues) => [...prevIssues, ...issues]);
+        if (hasNextPage) {
+          prevCursor = endCursor;
+        }
       }
-    })();
+    };
+
+    fetchIssues();
+
+    const observer = new IntersectionObserver(
+      async (entries) => {
+        const target = entries[0];
+        if (target.isIntersecting) {
+          fetchIssues();
+        }
+      },
+      { rootMargin: '20px', threshold: 0.5 }
+    );
+
+    if (lastRef.current) {
+      observer.observe(lastRef.current);
+    }
 
     // cancel if component unmount
     return () => {
+      observer.disconnect();
       isCanceled = true;
     };
   }, [language, token]);
@@ -59,27 +86,30 @@ const RepositoryCardList = ({ language }) => {
   };
 
   const repositories = uniqueRepositories(issues.map((issue) => issue.repository));
+
   return (
     <div className="flex flex-col p-3 gap-2">
-      {isLoading ? (
-        <div className="flex justify-center items-center py-6">
-          <Spinner />
-        </div>
-      ) : (
-        repositories &&
+      {repositories &&
         repositories
           .sort((repository) => -repository.number)
           .map((repository) => (
-            <RepositoryCard
+            <Repository
               {...repository}
               language={language}
               key={repository.id}
               recentIssue={issues.filter((issue) => issue.repository.id === repository.id)[0]}
             />
-          ))
+          ))}
+      {isLoading ? (
+        <div className="flex justify-center items-center py-6">
+          <Spinner />
+        </div>
+      ) : (
+        ''
       )}
+      <div ref={lastRef} />
     </div>
   );
 };
 
-export default RepositoryCardList;
+export default RepositoryList;
