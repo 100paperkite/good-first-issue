@@ -1,3 +1,4 @@
+import ReactDOM from 'react-dom';
 import { useState, useEffect } from 'react';
 
 import RepositoryList from './components/RepositoryList';
@@ -42,8 +43,11 @@ const App = () => {
 
   return (
     <>
-      {!isSignIn ? <OAuthModal clientId={process.env.REACT_APP_CLIENT_ID} /> : ''}
-
+      {!isSignIn &&
+        ReactDOM.createPortal(
+          <OAuthModal clientId={process.env.REACT_APP_CLIENT_ID} />,
+          document.getElementById('modal-root')
+        )}
       <Header />
       <div className="max-w-[800px] mx-auto my-0 z-0">
         <LanguageFilter onChangeLanguage={changeLanguageHandler} language={currentLanguage} />
