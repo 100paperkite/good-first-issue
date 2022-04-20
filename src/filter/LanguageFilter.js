@@ -24,7 +24,7 @@ const LanguageFilter = (props) => {
       {languages.map((language) => (
         <Chip
           key={language}
-          className={`font-semibold border ${
+          className={`text-sm sm:text-base font-semibold border ${
             props.language === language ? `bg-gray-200` : 'bg-white'
           }`}
           onClick={() => props.onChangeLanguage(language)}

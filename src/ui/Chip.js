@@ -2,7 +2,7 @@ const Chip = (props) => {
   const isButton = props.onClick ? true : false;
   return (
     <span
-      className={`inline-block rounded-3xl py-1 px-4 ${props.className} ${
+      className={`inline-block rounded-full py-1 px-4 ${props.className} ${
         isButton ? 'cursor-pointer' : ''
       }`}
       style={{ ...props.style }}
