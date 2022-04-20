@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/good-first-issue/static/css/main.bb23508a.css",
-    "main.js": "/good-first-issue/static/js/main.33d81cb5.js",
+    "main.css": "/good-first-issue/static/css/main.e4b2e405.css",
+    "main.js": "/good-first-issue/static/js/main.9f91120b.js",
     "index.html": "/good-first-issue/index.html",
-    "main.bb23508a.css.map": "/good-first-issue/static/css/main.bb23508a.css.map",
-    "main.33d81cb5.js.map": "/good-first-issue/static/js/main.33d81cb5.js.map"
+    "main.e4b2e405.css.map": "/good-first-issue/static/css/main.e4b2e405.css.map",
+    "main.9f91120b.js.map": "/good-first-issue/static/js/main.9f91120b.js.map"
   },
   "entrypoints": [
-    "static/css/main.bb23508a.css",
-    "static/js/main.33d81cb5.js"
+    "static/css/main.e4b2e405.css",
+    "static/js/main.9f91120b.js"
   ]
 }
