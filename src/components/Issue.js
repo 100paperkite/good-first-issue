@@ -1,7 +1,14 @@
 import { dateDiff } from '../utils/datediff';
 import { FaRegCommentAlt } from 'react-icons/fa';
 
-const IssueCard = ({ publishedAt, number, url, titleHTML, labels, comments: { totalCount } }) => {
+const IssueCard = ({
+  publishedAt,
+  number,
+  url,
+  titleHTML,
+  labels: { nodes: labels },
+  comments: { totalCount },
+}) => {
   const publishedAtTime = Date.parse(publishedAt);
 
   return (

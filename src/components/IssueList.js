@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import Spinner from '../ui/Spinner';
 
-const IssueList = ({ children, onloadBtnClick }) => {
+const IssueList = ({ children, onloadBtnClick, isLoadEnded }) => {
   const [isLoading, setLoading] = useState(false);
 
   const loadingHandler = async () => {
@@ -18,13 +18,15 @@ const IssueList = ({ children, onloadBtnClick }) => {
         {isLoading ? (
           <Spinner />
         ) : (
-          <button
-            type="button"
-            className="text-sm text-gray-500 rounded-full border px-3 py-1"
-            onClick={loadingHandler}
-          >
-            Load more issues
-          </button>
+          !isLoadEnded && (
+            <button
+              type="button"
+              className="text-sm text-gray-500 rounded-full border px-3 py-1"
+              onClick={loadingHandler}
+            >
+              Load more issues
+            </button>
+          )
         )}
       </div>
     </>

@@ -1,8 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 
 import Repository from './Repository';
-import { searchIssueByLanguage } from '../utils/graphql-query';
-import { fetchGraphQL, cleanGraphQLResponse } from '../utils/graphql';
+import { GitHubApi } from '../utils/github-api/graphql';
 import { store } from '../utils/localStorage';
 import Spinner from '../ui/Spinner';
 
@@ -10,59 +9,23 @@ const RepositoryList = ({ language }) => {
   const lastRef = useRef(null);
   const [issues, setIssues] = useState([]);
   const [isLoading, setLoading] = useState(false);
+
   const token = store.getLocalStorage('gh-token');
 
   // TODO: Refactor this
   useEffect(() => {
+    setIssues([]);
+
     if (!token) {
       return;
     }
-
-    setIssues([]);
-
-    let isCanceled = false;
-    let prevCursor = null;
-
-    const fetchIssues = async () => {
-      setLoading(true);
-      let {
-        data: {
-          search: {
-            edges: issues,
-            pageInfo: { endCursor, hasNextPage },
-          },
-        },
-      } = await fetchGraphQL(
-        'https://api.github.com/graphql',
-        { Authorization: `bearer ${token}` },
-        searchIssueByLanguage({
-          pageInfo: { after: prevCursor },
-          language,
-          count: process.env.REACT_APP_ISSUES_PER_PAGE,
-        })
-      );
-      issues = Object.values(cleanGraphQLResponse(issues));
-      issues = issues.filter((issue) => Object.keys(issue).length);
-      issues = issues.filter(
-        (issue) => issue.repository.stargazerCount >= process.env.REACT_APP_ISSUES_MIN_STARS
-      );
-
-      if (!isCanceled) {
-        setLoading(false);
-        setIssues((prevIssues) => [...prevIssues, ...issues]);
-        if (hasNextPage) {
-          prevCursor = endCursor;
-        }
-      }
-    };
-
-    fetchIssues();
+    const api = new GitHubApi(token);
 
     const observer = new IntersectionObserver(
       async (entries) => {
         const target = entries[0];
         if (target.isIntersecting) {
-          fetchIssues();
+          getIssues();
         }
       },
       { rootMargin: '20px', threshold: 0.5 }
@@ -72,7 +35,34 @@ const RepositoryList = ({ language }) => {
       observer.observe(lastRef.current);
     }
 
-    // cancel if component unmount
+    let isCanceled = false;
+    let nextCursor = null;
+
+    const getIssues = async () => {
+      setLoading(true);
+
+      let { data: issues, nextCursor: _nextCursor } = await api.searchIssuesWithRepo({
+        count: process.env.REACT_APP_ISSUES_PER_PAGE,
+        from: nextCursor,
+        queryParams: {
+          language,
+          sort: 'created-desc',
+        },
+      });
+
+      issues = issues.filter(
+        ({ node }) =>
+          node && node.repository.stargazerCount >= process.env.REACT_APP_ISSUES_MIN_STARS
+      );
+
+      if (!isCanceled) {
+        setLoading(false);
+        setIssues((prevIssues) => [...prevIssues, ...issues]);
+      }
+
+      nextCursor = _nextCursor;
+    };
+
     return () => {
       observer.disconnect();
       isCanceled = true;
@@ -85,7 +75,7 @@ const RepositoryList = ({ language }) => {
     });
   };
 
-  const repositories = uniqueRepositories(issues.map((issue) => issue.repository));
+  const repositories = uniqueRepositories(issues.map(({ node }) => node.repository));
 
   return (
     <div className="flex flex-col p-3 gap-2">
@@ -97,7 +87,7 @@ const RepositoryList = ({ language }) => {
               {...repository}
               language={language}
               key={repository.id}
-              recentIssue={issues.filter((issue) => issue.repository.id === repository.id)[0]}
+              recentIssue={issues.filter(({ node }) => node.repository.id === repository.id)[0]}
             />
           ))}
       {isLoading ? (

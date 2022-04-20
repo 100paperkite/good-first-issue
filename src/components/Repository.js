@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { VscRepoForked } from 'react-icons/vsc';
 import { FiStar } from 'react-icons/fi';
 
@@ -7,8 +7,7 @@ import Issue from './Issue';
 import IssueList from './IssueList';
 
 import { store } from '../utils/localStorage';
-import { cleanGraphQLResponse, fetchGraphQL } from '../utils/graphql';
-import { searchIssueByRepo } from '../utils/graphql-query';
+import { GitHubApi } from '../utils/github-api/graphql';
 
 const Repository = ({
   url,
@@ -16,29 +15,38 @@ const Repository = ({
   forkCount,
   stargazerCount,
   descriptionHTML,
-  languages,
+  languages: { edges: languages },
   owner: { login: owner },
   recentIssue,
 }) => {
+  const nextCursorRef = useRef(null);
   const [issues, setIssues] = useState([recentIssue]);
+  const [isLoadEnded, setLoadEnded] = useState(false);
 
   const token = store.getLocalStorage('gh-token');
+  const api = new GitHubApi(token);
 
-  const loadRepoIssueHandler = async () => {
-    let {
-      data: {
-        search: { edges: issues },
+  const getIssues = async () => {
+    const {
+      data: issues,
+      nextCursor,
+      hasNextPage,
+    } = await api.searchIssues({
+      count: process.env.REACT_APP_ISSUES_PER_REPO_PAGE,
+      from: nextCursorRef.current,
+      queryParams: {
+        repo: `${owner}/${name}`,
+        sort: 'created-desc',
       },
-    } = await fetchGraphQL(
-      'https://api.github.com/graphql',
-      {
-        Authorization: `bearer ${token}`,
-      },
-
-      searchIssueByRepo({ repo: { name, owner }, count: 5 })
-    );
-    issues = Object.values(cleanGraphQLResponse(issues));
-    setIssues(issues);
+    });
+    setIssues((prevIssues) => {
+      if (!nextCursorRef.current) {
+        return issues;
+      }
+      return [...prevIssues, ...issues];
+    });
+    setLoadEnded(!hasNextPage);
+    nextCursorRef.current = nextCursor;
   };
 
   return (
@@ -68,7 +76,7 @@ const Repository = ({
       />
       <div className="px-2 mt-2 mb-3 flex gap-2 flex-wrap">
         {languages &&
-          languages.map(({ color, name }) => (
+          languages.map(({ node: { color, name } }) => (
             <Chip
               className={`text-xs px-2 font-semibold`}
               style={{ color, backgroundColor: `${color}15` }}
@@ -78,9 +86,9 @@ const Repository = ({
             </Chip>
           ))}
       </div>
-      {recentIssue && (
-        <IssueList repo={{ owner, name }} onloadBtnClick={loadRepoIssueHandler}>
-          {issues && issues.map((issue) => <Issue key={issue.id} {...issue} />)}
+      {issues && (
+        <IssueList repo={{ owner, name }} onloadBtnClick={getIssues} isLoadEnded={isLoadEnded}>
+          {issues && issues.map(({ node: issue }) => <Issue key={issue.id} {...issue} />)}
         </IssueList>
       )}
     </article>
