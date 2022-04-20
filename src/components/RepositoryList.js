@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 
-import RepositoryCard from './RepositoryCard';
-import { searchIssueByLanguage } from '../../utils/graphql-query';
-import { fetchGraphQL } from '../../utils/graphql';
-import { store } from '../../utils/localStorage';
-import Spinner from '../UI/Spinner';
+import RepositoryCard from './Repository';
+import { searchIssueByLanguage } from '../utils/graphql-query';
+import { fetchGraphQL, cleanGraphQLResponse } from '../utils/graphql';
+import { store } from '../utils/localStorage';
+import Spinner from '../ui/Spinner';
 
 const RepositoryCardList = ({ language }) => {
   const [issues, setIssues] = useState([]);
@@ -21,7 +21,9 @@ const RepositoryCardList = ({ language }) => {
     // fetch issues
     (async () => {
       let {
-        data: { search: issues },
+        data: {
+          search: { edges: issues },
+        },
       } = await fetchGraphQL(
         'https://api.github.com/graphql',
         {
@@ -32,7 +34,7 @@ const RepositoryCardList = ({ language }) => {
           count: process.env.REACT_APP_ISSUES_PER_PAGE,
         })
       );
-
+      issues = Object.values(cleanGraphQLResponse(issues));
       issues = issues.filter((issue) => Object.keys(issue).length);
       issues = issues.filter(
         (issue) => issue.repository.stargazerCount >= process.env.REACT_APP_ISSUES_MIN_STARS

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
-import RepositoryCardList from './components/Card/RepositoryCardList';
-import LanguageFilter from './components/Filter/LanguageFilter';
+import RepositoryList from './components/RepositoryList';
+import LanguageFilter from './filter/LanguageFilter';
 import Header from './components/Header';
 import OAuthModal from './components/OAuthModal';
 
@@ -47,7 +47,7 @@ const App = () => {
       <Header />
       <div className="max-w-[800px] mx-auto my-0 z-0">
         <LanguageFilter onChangeLanguage={changeLanguageHandler} language={currentLanguage} />
-        <RepositoryCardList language={currentLanguage}></RepositoryCardList>
+        <RepositoryList language={currentLanguage}></RepositoryList>
       </div>
     </>
   );

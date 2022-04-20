@@ -1,4 +1,4 @@
-import Chip from '../UI/Chip';
+import Chip from '../ui/Chip';
 
 // temp
 const languages = [

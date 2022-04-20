@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import Spinner from '../UI/Spinner';
+import Spinner from '../ui/Spinner';
 
-const IssueContainer = ({ children, onloadBtnClick }) => {
+const IssueList = ({ children, onloadBtnClick }) => {
   const [isLoading, setLoading] = useState(false);
 
   const loadingHandler = async () => {
@@ -31,4 +31,4 @@ const IssueContainer = ({ children, onloadBtnClick }) => {
   );
 };
 
-export default IssueContainer;
+export default IssueList;

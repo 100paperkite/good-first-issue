@@ -1,4 +1,4 @@
-import { dateDiff } from '../../utils/datediff';
+import { dateDiff } from '../utils/datediff';
 import { FaRegCommentAlt } from 'react-icons/fa';
 
 const IssueCard = ({ publishedAt, number, url, titleHTML, labels, comments: { totalCount } }) => {
