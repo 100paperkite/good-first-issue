@@ -52,7 +52,7 @@ const RepositoryList = ({ language }) => {
 
       issues = issues.filter(
         ({ node }) =>
-          node && node.repository.stargazerCount >= process.env.REACT_APP_ISSUES_MIN_STARS
+          node && node.repository?.stargazerCount >= process.env.REACT_APP_ISSUES_MIN_STARS
       );
 
       if (!isCanceled) {
