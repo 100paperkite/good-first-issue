@@ -24,9 +24,7 @@ const Repository = ({
   const [isLoadEnded, setLoadEnded] = useState(false);
 
   const token = store.getLocalStorage('gh-token');
-  const api = useMemo(() => {
-    new GitHubApi(token);
-  }, [token]);
+  const api = useMemo(() => new GitHubApi(token), [token]);
 
   const getIssues = useCallback(async () => {
     const {
