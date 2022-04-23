@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 
 import Repository from './Repository';
 import { GitHubApi } from '../utils/github-api/graphql';
@@ -11,15 +11,11 @@ const RepositoryList = ({ language }) => {
   const [isLoading, setLoading] = useState(false);
 
   const token = store.getLocalStorage('gh-token');
+  const api = useMemo(() => new GitHubApi(token), [token]);
 
   // TODO: Refactor this
   useEffect(() => {
     setIssues([]);
-
-    if (!token) {
-      return;
-    }
-    const api = new GitHubApi(token);
 
     const observer = new IntersectionObserver(
       async (entries) => {
@@ -67,13 +63,13 @@ const RepositoryList = ({ language }) => {
       observer.disconnect();
       isCanceled = true;
     };
-  }, [language, token]);
+  }, [language, api]);
 
-  const uniqueRepositories = (repositories) => {
+  const uniqueRepositories = useCallback((repositories) => {
     return repositories.filter((repo, index, self) => {
       return self.findIndex((t) => t.id === repo.id) === index;
     });
-  };
+  }, []);
 
   const repositories = uniqueRepositories(issues.map(({ node }) => node.repository));
 

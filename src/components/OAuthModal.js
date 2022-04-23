@@ -1,6 +1,7 @@
+import React from 'react';
 import { SiGithub } from 'react-icons/si';
 
-const OAuthModal = (props) => {
+const OAuthModal = ({ clientId }) => {
   return (
     <div className="fixed h-full w-full flex z-10 backdrop-blur-lg">
       <div className="m-auto">
@@ -18,7 +19,7 @@ const OAuthModal = (props) => {
             type="button"
             className="bg-[#171515] text-white rounded-full shadow-xl px-4 py-3 mt-4 hover:opacity-90 duration-200"
           >
-            <a href={`https://github.com/login/oauth/authorize?client_id=${props.clientId}`}>
+            <a href={`https://github.com/login/oauth/authorize?client_id=${clientId}`}>
               <span>
                 <SiGithub size={26} className="inline-block my-auto align-middle mr-2" />
                 <span className="inline-block align-middle">Sign in GitHub</span>
@@ -31,4 +32,4 @@ const OAuthModal = (props) => {
   );
 };
 
-export default OAuthModal;
+export default React.memo(OAuthModal);

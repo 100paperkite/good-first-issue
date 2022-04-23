@@ -1,5 +1,6 @@
 import { dateDiff } from '../utils/datediff';
 import { FaRegCommentAlt } from 'react-icons/fa';
+import React from 'react';
 
 const IssueCard = ({
   publishedAt,
@@ -48,4 +49,4 @@ const IssueCard = ({
   );
 };
 
-export default IssueCard;
+export default React.memo(IssueCard);

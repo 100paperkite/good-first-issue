@@ -1,15 +1,15 @@
-import { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import Spinner from '../ui/Spinner';
 
 const IssueList = ({ children, onloadBtnClick, isLoadEnded }) => {
   const [isLoading, setLoading] = useState(false);
 
-  const loadingHandler = async () => {
+  const loadingHandler = useCallback(async () => {
     setLoading(true);
     await onloadBtnClick();
     setLoading(false);
-  };
+  }, [onloadBtnClick]);
 
   return (
     <>
@@ -33,4 +33,4 @@ const IssueList = ({ children, onloadBtnClick, isLoadEnded }) => {
   );
 };
 
-export default IssueList;
+export default React.memo(IssueList);

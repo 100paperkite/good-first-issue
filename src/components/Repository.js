@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { VscRepoForked } from 'react-icons/vsc';
 import { FiStar } from 'react-icons/fi';
 
@@ -24,9 +24,11 @@ const Repository = ({
   const [isLoadEnded, setLoadEnded] = useState(false);
 
   const token = store.getLocalStorage('gh-token');
-  const api = new GitHubApi(token);
+  const api = useMemo(() => {
+    new GitHubApi(token);
+  }, [token]);
 
-  const getIssues = async () => {
+  const getIssues = useCallback(async () => {
     const {
       data: issues,
       nextCursor,
@@ -47,7 +49,7 @@ const Repository = ({
     });
     setLoadEnded(!hasNextPage);
     nextCursorRef.current = nextCursor;
-  };
+  }, [api, owner, name]);
 
   return (
     <article className="p-4 shadow-gray-200 shadow-xl rounded-2xl border border-gray-100 gap-3 bg-white">

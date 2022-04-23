@@ -1,16 +1,15 @@
-const Chip = (props) => {
-  const isButton = props.onClick ? true : false;
+import React from 'react';
+
+const Chip = ({ className, style, onClick, children }) => {
   return (
     <span
-      className={`inline-block rounded-full py-1 px-4 ${props.className} ${
-        isButton ? 'cursor-pointer' : ''
-      }`}
-      style={{ ...props.style }}
-      onClick={props.onClick}
+      className={`inline-block rounded-full py-1 px-4 ${className}`}
+      style={{ ...style }}
+      onClick={onClick}
     >
-      {props.children}
+      {children}
     </span>
   );
 };
 
-export default Chip;
+export default React.memo(Chip);

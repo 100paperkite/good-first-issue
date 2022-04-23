@@ -1,3 +1,5 @@
+import React from 'react';
+
 const Spinner = ({ className, style }) => {
   return (
     <div
@@ -10,4 +12,4 @@ const Spinner = ({ className, style }) => {
   );
 };
 
-export default Spinner;
+export default React.memo(Spinner);
