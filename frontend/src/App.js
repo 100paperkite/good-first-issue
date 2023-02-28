@@ -24,7 +24,7 @@ const App = () => {
 
     const code = window.location.href.split('?code=')[1];
     if (code) {
-      fetch(`${process.env.REACT_APP_OAUTH_PROXY_URL}/authenticate/${code}`)
+      fetch(`${process.env.REACT_APP_OAUTH_PROXY_URL}/authenticate?code=${code}`)
         .then((res) => res.json())
         .then((res) => {
           if (res.token) {

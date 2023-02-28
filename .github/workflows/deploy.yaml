@@ -18,7 +18,9 @@ jobs:
           node-version: '16'
 
       - name: Install
-        run: npm ci
+        run: |
+          cd frontend/
+          npm ci
 
       - name: Deploy with gh-pages
         run: |
