@@ -45,8 +45,8 @@ jobs:
 
       - name: Create a .env file
         run: |
-          echo "PORT=${{ secrets.PORT }}" >> .env
-          echo "GFI_CLIENT_ID=${{ secrets.GFI_CLIENT_ID }}" >> .env
+          echo "PORT=${{ env.SERVER_PORT }}" >> .env
+          echo "GFI_CLIENT_ID=${{ env.GFI_CLIENT_ID }}" >> .env
           echo "GFI_CLIENT_SECRET=${{ secrets.GFI_CLIENT_SECRET }}" >> .env
 
       - name: Make zip file
