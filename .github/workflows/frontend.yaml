@@ -4,10 +4,16 @@ on:
   push:
     branches:
       - main
+env:
+  applicationfolder: frontend
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.applicationfolder }}
+
     steps:
       - name: Git checkout 🛎️
         uses: actions/checkout@v3
@@ -18,9 +24,12 @@ jobs:
           node-version: '16'
 
       - name: Install
+        run: npm ci
+
+      - name: Append environment variables to .env
         run: |
-          cd frontend/
-          npm ci
+          echo "REACT_APP_CLIENT_ID=${{ secrets.GFI_CLIENT_ID }}" >> .env
+          echo "REACT_APP_OAUTH_PROXY_URL=${{ secrets.SERVER_URL }}" >> .env
 
       - name: Deploy with gh-pages
         run: |
