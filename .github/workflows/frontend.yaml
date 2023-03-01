@@ -29,7 +29,7 @@ jobs:
       - name: Append environment variables to .env
         run: |
           echo "REACT_APP_CLIENT_ID=${{ vars.GFI_CLIENT_ID }}" >> .env
-          echo "REACT_APP_OAUTH_PROXY_URL=${{ vars.SERVER_URL }}:${{ vars.SERVER_PORT }}" >> .env
+          echo "REACT_APP_OAUTH_PROXY_URL=${{ vars.SERVER_URL }}" >> .env
 
       - name: Deploy with gh-pages
         run: |
